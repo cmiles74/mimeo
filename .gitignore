@@ -1,0 +1,57 @@
+**/classes
+**/target
+**/.artifacts
+**/.cpcache
+**/.DS_Store
+**/.gradle
+
+# User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/shelf
+.idea/**/statistic.xml
+.idea/dictionaries/**
+.idea/libraries/**
+
+# File-based project format
+*.iws
+*.ipr
+
+# Cursive Clojure plugin
+.idea/replstate.xml
+
+/example/example/**
+artifacts
+projects/**/pom.xml
+
+# nrepl
+.nrepl-port
+development/src/user.clj
+
+# clojure-lsp
+.lsp/.cache
+
+# clj-kondo
+.clj-kondo/.cache
+
+# Calva VS Code Extension
+.calva/output-window/output.calva-repl
+
+# environment files
+.env
+
+# application configuration files
+config.edn
+
+# Local working files
+scratch
+projects/redbrick-project/dev-scripts
+
+# UI Things
+.vite/
+node_modules
+projects/redbrick-project/resources/public
+
+# state files
+state
