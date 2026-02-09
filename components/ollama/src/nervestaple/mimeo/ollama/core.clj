@@ -35,7 +35,7 @@
       (.withPrompt prompt)
       (.build))))
 
-(defn prompt-one-shot [connection model prompt]
+(defn prompt [connection model prompt]
   (let [in (request model prompt)
         out (.generate connection in nil)]
     (json->map (str out))))

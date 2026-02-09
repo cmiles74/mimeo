@@ -28,9 +28,9 @@
   (core/family->model connection model-family-name))
 
 
-(defn prompt-one-shot
+(defn prompt
   "Accepts an active Ollama connection, a model and a String with a prompt.
   Provides that prompt to the specified model and returns a map with the
   response."
   [connection model prompt]
-  (core/prompt-one-shot connection model prompt))
+  (core/prompt connection model prompt))
