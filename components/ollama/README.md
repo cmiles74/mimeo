@@ -44,7 +44,7 @@ You will have a map will all of the features of the model. Here's an example fro
  You can also fetch one model by name or a list of them by family. 😉 With a connection and model in hand we can now prompt the model for output!
 
  ```clojure
-(ollama/prompt-one-shot connection model "Hello!")
+(ollama/prompt connection model "Hello!")
  ```
 
 The result is a map with the output from the model. 🎉
