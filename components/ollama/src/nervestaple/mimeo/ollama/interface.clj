@@ -27,6 +27,12 @@
   [connection model-family-name]
   (core/family->model connection model-family-name))
 
+(defn pull-model
+  "Instructions the Ollama server to pull the named model, returns true if
+  successful."
+  [connection model]
+  (core/pull-model connection model))
+
 (defn prompt
   "Accepts an active Ollama connection, the name of a model, an optional system
   prompt, an optional context and a prompt for the model. Provides that prompt

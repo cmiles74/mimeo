@@ -27,6 +27,9 @@
   (->> (models connection)
        (filterv #(= (:modelName %) model-family-name))))
 
+(defn pull-model [connection model]
+  (.pullModel connection model))
+
 (defn request
   ([model prompt]
    (request model nil nil prompt))
