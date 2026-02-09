@@ -27,10 +27,13 @@
   [connection model-family-name]
   (core/family->model connection model-family-name))
 
-
 (defn prompt
-  "Accepts an active Ollama connection, a model and a String with a prompt.
-  Provides that prompt to the specified model and returns a map with the
-  response."
-  [connection model prompt]
-  (core/prompt connection model prompt))
+  "Accepts an active Ollama connection, the name of a model, an optional system
+  prompt, an optional context and a prompt for the model. Provides that prompt
+  to the specified model and returns a map with the response."
+  ([connection model prompt-text]
+   (core/prompt connection model prompt-text))
+  ([connection model system prompt-text]
+   (core/prompt connection model system prompt-text))
+  ([connection model system context prompt-text]
+   (core/prompt connection model system context prompt-text)))

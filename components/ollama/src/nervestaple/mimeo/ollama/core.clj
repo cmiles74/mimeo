@@ -27,15 +27,27 @@
   (->> (models connection)
        (filterv #(= (:modelName %) model-family-name))))
 
-(defn request [model prompt]
-  (let [model-this (if (map? model) (:name model) model)
-        builder (OllamaGenerateRequest/builder)]
-    (doto builder
-      (.withModel model-this)
-      (.withPrompt prompt)
-      (.build))))
+(defn request
+  ([model prompt]
+   (request model nil nil prompt))
+  ([model system prompt]
+   (request model system nil prompt))
+  ([model system context prompt]
+   (let [model-this (if (map? model) (:name model) model)
+         builder (OllamaGenerateRequest/builder)]
+     (doto builder
+       (.withModel model-this)
+       (.withPrompt prompt))
+     (when system (.withSystem builder system))
+     (when context (.withContext builder context))
+     (.build builder))))
 
-(defn prompt [connection model prompt]
-  (let [in (request model prompt)
-        out (.generate connection in nil)]
-    (json->map (str out))))
+(defn prompt
+  ([connection model prompt-text]
+   (prompt connection model nil nil prompt-text))
+  ([connection model system prompt-text]
+   (prompt connection model system nil prompt-text))
+  ([connection model system context prompt-text]
+   (let [in (request model system context prompt-text)
+         out (.generate connection in nil)]
+     (json->map (str out)))))
