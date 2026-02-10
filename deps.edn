@@ -2,12 +2,13 @@
            {:extra-paths ["development/src"]
 
             :extra-deps {;; Components
-                         poly/ollama {:local/root "components/ollama"}
                          poly/agent  {:local/root "components/agent"}
+                         poly/log    {:local/root "components/log"}
+                         poly/ollama {:local/root "components/ollama"}
+                         poly/uuid   {:local/root "components/uuid"}
 
                          ;; Bases
                          poly/mimeo-base {:local/root "bases/mimeo-base"}
-
 
                          metosin/jsonista            {:mvn/version "0.3.13"}
                          org.clojure/clojure           {:mvn/version "1.12.4"}
