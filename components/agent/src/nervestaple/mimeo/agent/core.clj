@@ -7,34 +7,31 @@
 
 (defonce ENVIRONMENTS (ref {}))
 
-(defn store-message [session request]
-  (let [environment (ENVIRONMENTS (:id session))
+(defn update-transcript [session type request]
+  (let [environment (@ENVIRONMENTS (:id session))
         environment-out (assoc environment :messages
-                               (conj (or (environment :messages) []) request))]
+                               (conj (or (environment :messages) [])
+                                     {:type type :message request}))]
     (dosync (alter ENVIRONMENTS assoc (:id session) environment-out))
     environment-out))
 
-(defn agent-channel-out []
+(defn agent-channel-out [session]
   (let [model-out-chan (async/chan)]
     (async/go-loop []
       (when-let [result (async/<! model-out-chan)]
-        (log/info "\n" (:response result)))
+        (update-transcript session :response (:response result))
+        (println "\n" (:response result)))
       (recur))
     model-out-chan))
 
-(defn agent-channel-in [connect model-name out-chan]
+(defn agent-channel-in [connect model-name session out-chan]
   (let [model-chan (async/chan)]
     (async/go-loop []
       (when-let [prompt (async/<! model-chan)]
-        (async/>! out-chan (ollama/prompt connect model-name prompt)))
+        (let [environment (update-transcript session :request prompt)]
+          (async/>! out-chan (ollama/prompt connect model-name prompt))))
       (recur))
     model-chan))
-
-(defn start-agent [connect model-name]
-  (let [out-chan (agent-channel-out)
-        in-chan (agent-channel-in connect model-name out-chan)]
-    {:request-channel in-chan
-     :response-channel out-chan}))
 
 (defn shutdown-agent [agent-map]
   (async/close! (agent-map :request-channel))
@@ -45,24 +42,12 @@
     (dosync (alter ENVIRONMENTS assoc (:id session) {}))
     session))
 
-(defn session-channel-in [session agent-map]
-  (let [session-chan (async/chan)]
-    (async/go-loop []
-      (when-let [prompt (async/<! session-chan)]
-        (let [environment (store-message session prompt)]
-          (log/debug "Session" (session :id))
-          (async/>! (agent-map :request-channel) prompt)))
-      (recur))
-    session-chan))
-
-(defn start-session [agent-map]
+(defn start-agent [connect model-name]
   (let [session (new-session)
-        in-chan (session-channel-in session agent-map)]
+        out-chan (agent-channel-out session)
+        in-chan (agent-channel-in connect model-name session out-chan)]
     {:session session
      :request-channel in-chan
-     :response-channel (agent-map :response-channel)}))
+     :response-channel out-chan}))
 
-(defn stop-session [session-map]
-  (async/close! (session-map :request-channel))
-  (dosync (alter ENVIRONMENTS dissoc (:id session-map))))
 
