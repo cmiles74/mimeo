@@ -15,6 +15,16 @@
     (dosync (alter ENVIRONMENTS assoc (:id session) environment-out))
     environment-out))
 
+(defn transcript [session]
+  (let [messages (session :messages)]
+    (when messages
+      (apply str
+             (for [message messages]
+               (str (if (= :request (message :type))
+                      "Request: " "Response: ")g
+                    (.trim (message :message))
+                    "\n\n"))))))
+
 (defn agent-channel-out [session]
   (let [model-out-chan (async/chan)]
     (async/go-loop []
@@ -28,8 +38,10 @@
   (let [model-chan (async/chan)]
     (async/go-loop []
       (when-let [prompt (async/<! model-chan)]
-        (let [environment (update-transcript session :request prompt)]
-          (async/>! out-chan (ollama/prompt connect model-name prompt))))
+        (let [transcript (when session (transcript session))
+              environment (update-transcript session :request prompt)]
+          (async/>! out-chan
+                    (ollama/prompt connect model-name nil transcript prompt))))
       (recur))
     model-chan))
 
@@ -49,5 +61,4 @@
     {:session session
      :request-channel in-chan
      :response-channel out-chan}))
-
 
