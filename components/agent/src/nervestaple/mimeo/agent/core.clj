@@ -41,13 +41,14 @@
         (let [session-this (fetch-session (:id session))
               model-name (get-in session-this [:agent :model-name])
               system-prompt (get-in session-this [:agent :system-prompt])
-              environment (update-transcript session :request prompt)
               transcript (when session
                            (str "Below is a transcript of the conversation so "
                                 "far.\n\n"
-                                (current-transcript environment)))
+                                (current-transcript session-this)
+                                prompt))
+              environment (update-transcript session :request prompt)
               result (ollama/prompt connect model-name system-prompt
-                                      (or transcript prompt))]
+                                    (or transcript prompt))]
           (update-transcript session :response (:response result))
           (async/>! out-chan result)))
       (recur))
