@@ -3,10 +3,12 @@
    [nervestaple.mimeo.ollama.core :as core]))
 
 (defn connect
-  "Accepts the URL to a running Ollama server and returns an active connection to
-  that server."
-  [ollama-url]
-  (core/connect ollama-url))
+  "Accepts the URL to a running Ollama server and (optionally) a timeout value in
+  seconds. Returns an active connection to that server."
+  ([ollama-url]
+   (core/connect ollama-url))
+  ([ollama-url timeout-seconds]
+   (core/connect ollama-url timeout-seconds)))
 
 (defn models
   "Returns a list of maps with information about the all of the models available

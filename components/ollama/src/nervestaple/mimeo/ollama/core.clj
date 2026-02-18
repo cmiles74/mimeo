@@ -5,8 +5,13 @@
    [io.github.ollama4j Ollama]
    [io.github.ollama4j.models.generate OllamaGenerateRequest]))
 
-(defn connect [ollama-url]
-  (Ollama. ollama-url))
+(defn connect
+  ([ollama-url]
+   (connect ollama-url 60))
+  ([ollama-url timeout-seconds]
+   (let [connection (Ollama. ollama-url)]
+     (.setRequestTimeoutSeconds connection timeout-seconds)
+     connection)))
 
 (defn json->map [json-data]
   (json/read-value json-data json/keyword-keys-object-mapper))
