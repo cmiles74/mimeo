@@ -6,15 +6,48 @@
    [nervestaple.mimeo.ollama.interface :as ollama]
    [nervestaple.mimeo.uuid.interface :as uuid]))
 
-(defonce ENVIRONMENTS (ref {}))
+(defonce SESSIONS (atom {}))
 
-(defn register-agent [session agent-map]
-  (dosync (alter ENVIRONMENTS assoc (:id session)
-                 (merge (@ENVIRONMENTS (:id session))
-                        {:agent (dissoc agent-map :session)}))))
+(defn clear-sessions []
+  (reset! SESSIONS {}))
 
-(defn fetch-session [session-id]
-  (@ENVIRONMENTS session-id))
+(defn create-session []
+  (let [id (uuid/generate-sequential)]
+    (swap! SESSIONS assoc id {})
+    id))
+
+(defn delete-session [id]
+  (swap! SESSIONS dissoc id))
+
+(defn store-session [id data]
+  (swap! SESSIONS assoc id data))
+
+(defn fetch-session [id]
+  (@SESSIONS id))
+
+(defn session-request [request]
+  (let [session-id (or (request :session-id) (create-session))
+        session-map (fetch-session session-id)]
+    (merge request {:session-id session-id :session session-map})))
+
+(defn session-response [response request]
+  (let [session-id (request :session-id)
+        session-map (request :session)]
+    (when (nil? session-id) (log/warn "No session found in the request"))
+    (when (and session-id session-map) (store-session session-id session-map))
+    (merge response {:session-id session-id :session session-map})))
+
+(defn wrap-session [handler]
+  (fn [request]
+    (let [request (session-request request)]
+      (-> (handler request)
+          (session-response request)))))
+
+(defn wrap-transcript [handler]
+  (fn [request]
+    (let [transcript (or (get-in request [:session :transcript]) [])
+          message (request :message)]
+      (assoc-in request [:session :transcript] (conj transcript message)))))
 
 (defn update-transcript [session type message]
   (let [environment (@ENVIRONMENTS (:id session))

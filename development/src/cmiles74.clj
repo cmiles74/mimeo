@@ -8,10 +8,12 @@
    [nervestaple.mimeo.ollama.interface :as ollama]
    [nervestaple.mimeo.agent.interface :as agent]))
 
-(def CONNECTION (ollama/connect "http://friday.nervestaple.com:11434"))
+(def CONNECTION (ollama/connect "http://kipu-laptop.nervestaple.com:11434" 300))
 (def MODEL (ollama/name->model CONNECTION "gemma3:12b"))
 
-(defonce demo-agent (agent/start-agent CONNECTION MODEL))
+(def demo-agent (agent/start-agent
+                 CONNECTION MODEL
+                 "You are a friendly and helpful assistant named Gemma!\n\n"))
 
 (defn hello [name]
   (->> (ollama/prompt CONNECTION MODEL
@@ -19,5 +21,11 @@
        :response))
 
 (defn chat-agent [message]
-  (async/>!! (demo-agent :request-channel) message))
+  (let [sent? (async/>!! (demo-agent :request-channel) message)]
+    (when sent?
+      (time
+       (let [result (async/<!! (demo-agent :response-channel))]
+         (println (:response result) "\n"))))))
 
+(defn agent-handler [response]
+  (println (:response response) "\n"))
