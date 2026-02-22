@@ -2,6 +2,8 @@
 
 This is an experimental project where I play around with local large language models. Presently I'm interested in putting my own (admittedly simple) agent harness together. Most of this code is hack-as-I-go, but if you find anything useful be sure to let me know. `;-)`
 
+The `agent` component is probably the place to get started right now. We functions that let you create an "agent function" (a function that accepts input and executes it against Ollama) and then to create an "agent loop" around that function. We use `core.async` channels to setup a request and response channel, you provide the middleware to make it do something interesting!
+
 ## About Polylith
 
 The Polylith documentation can be found here:
