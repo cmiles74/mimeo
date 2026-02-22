@@ -10,7 +10,7 @@ code.
 You will want to include the interface for this component so that you can call it's methods.
 
 ```clojure
-(require [nervestaple.mimeo.log.interface :as log])
+(require '[nervestaple.mimeo.log.interface :as log])
 ```
 
 Logging messages is as easy as...

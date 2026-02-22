@@ -2,10 +2,12 @@
            {:extra-paths ["development/src"]
 
             :extra-deps {;; Components
-                         poly/agent  {:local/root "components/agent"}
-                         poly/log    {:local/root "components/log"}
-                         poly/ollama {:local/root "components/ollama"}
-                         poly/uuid   {:local/root "components/uuid"}
+                         poly/transcript  {:local/root "components/agent-transcript"}
+                         poly/session  {:local/root "components/agent-session-memory"}
+                         poly/agent    {:local/root "components/agent"}
+                         poly/log      {:local/root "components/log"}
+                         poly/ollama   {:local/root "components/ollama"}
+                         poly/uuid     {:local/root "components/uuid"}
 
                          ;; Bases
                          poly/mimeo-base {:local/root "bases/mimeo-base"}
