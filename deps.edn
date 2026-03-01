@@ -3,28 +3,31 @@
 
             :extra-deps {;; Components
                          poly/transcript  {:local/root "components/agent-transcript"}
-                         poly/session  {:local/root "components/agent-session-memory"}
-                         poly/agent    {:local/root "components/agent"}
-                         poly/log      {:local/root "components/log"}
-                         poly/ollama   {:local/root "components/ollama"}
-                         poly/uuid     {:local/root "components/uuid"}
+                         poly/session     {:local/root "components/agent-session-memory"}
+                         poly/agent       {:local/root "components/agent"}
+                         poly/log         {:local/root "components/log"}
+                         poly/ollama      {:local/root "components/ollama"}
+                         poly/uuid        {:local/root "components/uuid"}
 
-                         ;; Bases
-                         poly/mimeo-base {:local/root "bases/mimeo-base"}
+                        ;; Bases
+                         poly/mimeo       {:local/root "bases/mimeo"}
 
-                         metosin/jsonista            {:mvn/version "0.3.13"}
+                         metosin/jsonista              {:mvn/version "0.3.13"}
                          org.clojure/clojure           {:mvn/version "1.12.4"}
                          org.clojure/tools.deps        {:mvn/version "0.28.1578"}
                          io.github.clojure/tools.build {:mvn/version "0.10.12"}}
             :jvm-opts ["-Djdk.attach.allowAttachSelf"]}
 
            :test {:extra-paths []
-                  :extra-deps  {org.clojars.lispyclouds/contajners {:mvn/version "1.0.7"}}}
+                  :extra-deps  {org.clojars.lispyclouds/contajners
+                                {:mvn/version "1.0.7"}}}
 
            :poly {:extra-deps {polylith/clj-poly {:mvn/version "0.3.32"}}
                   :main-opts  ["-m" "polylith.clj.core.poly-cli.core"]}
 
            :build {:deps       {org.clojure/tools.deps        {:mvn/version "0.28.1578"}
-                                io.github.clojure/tools.build {:mvn/version "0.10.12"}}
+                                io.github.clojure/tools.build {:mvn/version "0.10.12"}
+                                io.github.seancorfield/build-uber-log4j2-handler
+                                {:git/tag "v2.25.3" :git/sha "390030e"}}
                    :paths      ["build/resources"]
                    :ns-default build}}}
