@@ -32,20 +32,6 @@
          "```\n\n")
     ""))
 
-(defn transcript-middleware [handler]
-  (fn
-    ([request]
-     (let [transcript (or (get-in request [:session :transcript]) [])]
-       (handler (assoc-in request [:session :transcript]
-                          (conj transcript {:type :request
-                                            :message (request :message)})))))
-    ([request response]
-     (let [transcript (or (get-in response [:session :transcript]) [])
-           response-out (handler request response)]
-       (assoc-in response-out [:session :transcript]
-                 (conj transcript {:type :response
-                                   :message (response :response)}))))))
-
 (defn fill-transcript-middleware [handler]
   (fn
     ([request]

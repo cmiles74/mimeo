@@ -8,7 +8,7 @@
   (fn
     ([request]
      request)
-    ([request response]
+    ([_request response]
      response)))
 
 (defn define-agent [connection model system]

@@ -7,7 +7,7 @@
    [nervestaple.mimeo.agent-session-memory.interface :as session]
    [nervestaple.mimeo.agent-transcript.interface :as transcript]))
 
-(def CONNECTION (ollama/connect "http://friday.nervestaple.com:11434" 300))
+(def CONNECTION (ollama/connect "http://localhost:11434" 300))
 (def MODEL (ollama/name->model CONNECTION "gemma3:12b"))
 
 (def demo-agent (llm-agent/define-agent
@@ -40,5 +40,5 @@
 
 (defn -main
   "Bootstrapping function for the application"
-  [& args]
+  [& _args]
   (start-chat))
