@@ -1,0 +1,39 @@
+name: Build and Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+      - 'release'
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 25
+      - name: Install Clojure Tools
+        uses: DeLaGuardo/setup-clojure@13.4
+        with:
+          cli: 1.12.4.1607
+      - name: Cache Clojure Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.deps.clj
+            .cpcache
+          key: cljdeps-${{ hashFiles('deps.edn') }}
+          restore-keys: cljdeps-
+      - name: Force Clojure to Resolve Dependencies
+        run: clojure -A:dev:test -P
+      - name: Test
+        run: xvfb-run clojure -M:poly test :all
+      - name: Check
+        run: clojure -M:poly check

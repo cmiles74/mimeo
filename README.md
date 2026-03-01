@@ -1,5 +1,7 @@
 # Mimeo
 
+![Continuous Integration](https://github.com/cmiles74/mimeo/workflows/Build%20and%20Test/badge.svg)
+
 This is an experimental project where I play around with local large language models. Presently I'm interested in putting my own (admittedly simple) agent harness together and having a couple of agents that talk to each other. Most of this code is hack-as-I-go, but if you find anything useful be sure to let me know. `;-)`
 
 The `mimeo` project and the `agent` component are probably the places to get started right now. We have functions that let you create an "agent function" (a function that accepts input and executes it against Ollama) and then to create an "agent loop" around that function. We use `core.async` channels to setup a request and response channel, you provide the middleware to make it do something interesting!
