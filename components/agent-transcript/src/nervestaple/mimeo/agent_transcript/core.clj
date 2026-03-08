@@ -6,30 +6,39 @@
      (let [transcript (or (get-in request [:session :transcript]) [])]
        (handler (assoc-in request [:session :transcript]
                           (conj transcript {:type :request
-                                            :message (request :message)})))))
+                                            :message (or (request :message-original)
+                                                         (request :message))})))))
     ([request response]
      (let [transcript (or (get-in response [:session :transcript]) [])
-           response-out (handler request response)]
+           response-out (handler request response)
+           message (merge {:type :response
+                           :message (or (response :response-original)
+                                        (response :response))}
+                          (when (response :tool-call)
+                            {:tool-call (response :tool-call)}))]
        (assoc-in response-out [:session :transcript]
-                 (conj transcript {:type :response
-                                   :message (response :response)}))))))
+                 (conj transcript message))))))
 
 (defn transcript-item->header [item]
-  (cond (= :response (item :type))
+  (cond (item :tool-call)
+        "YOU (to yourself)"
+
+        (= :response (item :type))
         "YOU"
 
         :else "THEM"))
 
 (defn transcript->text [transcript]
   (if (and transcript (< 1 (count transcript)))
-    (str "Attached below is a transcript of the conversation so far.\n\n"
-         "```\n"
-         (apply str
-                (for [item transcript]
-                  (str (transcript-item->header item) ": "
-                       (item :message)
-                       "\n\n")))
-         "```\n\n")
+    (let [out (str "Attached below is a transcript of the conversation so far.\n\n"
+                   "```\n"
+                   (apply str
+                          (for [item transcript]
+                            (str (transcript-item->header item) ": "
+                                 (item :message)
+                                 "\n\n")))
+                   "```\n\n")]
+      out)
     ""))
 
 (defn fill-transcript-middleware [handler]
