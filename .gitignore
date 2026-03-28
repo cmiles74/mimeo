@@ -55,3 +55,4 @@ projects/redbrick-project/resources/public
 
 # state files
 state
+/.agent-shell/
