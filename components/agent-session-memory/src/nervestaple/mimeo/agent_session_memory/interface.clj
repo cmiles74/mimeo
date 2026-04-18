@@ -2,6 +2,11 @@
   (:require
    [nervestaple.mimeo.agent-session-memory.core :as core]))
 
+(defn clear-sessions
+  "Clears all stored sessions."
+  []
+  (core/clear-sessions))
+
 (defn fetch-session
   "Accepts a unique session identifier and returns the map of session data
   associated with that identifier."

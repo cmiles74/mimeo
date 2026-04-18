@@ -1,4 +1,5 @@
-{:deps {poly/transcript  {:local/root "../../components/agent-transcript"}
+{:deps {poly/tool        {:local/root "../../components/agent-tool"}
+        poly/transcript  {:local/root "../../components/agent-transcript"}
         poly/session     {:local/root "../../components/agent-session-memory"}
         poly/agent       {:local/root "../../components/agent"}
         poly/log         {:local/root "../../components/log"}

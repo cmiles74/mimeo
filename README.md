@@ -6,6 +6,11 @@ This is an experimental project where I play around with local large language mo
 
 The `mimeo` project and the `agent` component are probably the places to get started right now. We have functions that let you create an "agent function" (a function that accepts input and executes it against Ollama) and then to create an "agent loop" around that function. We use `core.async` channels to setup a request and response channel, you provide the middleware to make it do something interesting!
 
+We also provide some middleware for you that will...
+- Create a transcript and inject it into the prompt
+- Let you define tool calls and then handle the calling of those tools
+- Maintain session information between calls to the model
+
 ## About Polylith
 
 The Polylith documentation can be found here:

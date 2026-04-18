@@ -1,32 +1,64 @@
 (ns nervestaple.mimeo.agent-transcript.core)
 
+(defn transcript-tool-call
+  [response]
+  (let [request (merge {:type :tool-request
+                        :message (response :tool-call)})
+        message (merge {:type :tool-response
+                        :continue true
+                        :message (or (response :response-original)
+                                     (response :response))})]
+    [request message]))
+
+(defn transcript-response
+  [response]
+  [{:type :response
+    :continue false
+    :message (or (response :response-original)
+                 (response :response))}])
+
 (defn transcript-middleware [handler]
   (fn
     ([request]
      (let [transcript (or (get-in request [:session :transcript]) [])]
-       (handler (assoc-in request [:session :transcript]
-                          (conj transcript {:type :request
-                                            :message (or (request :message-original)
-                                                         (request :message))})))))
+       (handler (if (= :continue (request :message-original))
+                  request
+                  (assoc-in request [:session :transcript]
+                            (conj transcript {:type :request
+                                              :message (or (request :message-original)
+                                                           (request :message))}))))))
     ([request response]
      (let [transcript (or (get-in response [:session :transcript]) [])
            response-out (handler request response)
-           message (merge {:type :response
-                           :message (or (response :response-original)
-                                        (response :response))}
-                          (when (response :tool-call)
-                            {:tool-call (response :tool-call)}))]
+           messages-out (if (response :tool-call)
+                          (transcript-tool-call response)
+                          (transcript-response response))]
        (assoc-in response-out [:session :transcript]
-                 (conj transcript message))))))
+                 (into transcript messages-out))))))
+
+(defn parse-request [request]
+  (let [message (or (request :message-original) (request :message))]
+    (merge {:message message}
+           (select-keys request [:type]))))
+
+(defn parse-response [response]
+  (let [response-message (or (response :response-original) (response :response))]
+    (merge {:response response-message}
+           (select-keys response [::type :evalCount :done :totalDuration
+                                  :promptEvalDuration :doneReason :createdAt
+                                  :loadDuration :responseTime]))))
 
 (defn transcript-item->header [item]
-  (cond (item :tool-call)
-        "YOU (to yourself)"
+  (cond (= :tool-request (item :type))
+        "TOOL_USE"
+
+        (= :tool-response (item :type))
+        "TOOL_RESULT"
 
         (= :response (item :type))
-        "YOU"
+        "ASSISTANT"
 
-        :else "THEM"))
+        :else "USER"))
 
 (defn transcript->text [transcript]
   (if (and transcript (< 1 (count transcript)))

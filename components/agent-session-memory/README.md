@@ -7,7 +7,7 @@ This middleware provides an in-memory session manager. A session identifier is a
 You will want to include the interface for this component. `;-)`
 
 ```clojure
-(require '[nervestaple.mimeo.agent-session-memory :as session])
+(require '[nervestaple.mimeo.agent-session-memory.interface :as session])
 ```
 
 When you build up the middleware stack, be sure to include this one towards the bottom.
